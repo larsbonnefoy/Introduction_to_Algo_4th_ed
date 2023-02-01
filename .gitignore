@@ -1,0 +1,5 @@
+*.out
+*.dSYM
+*.o
+*.a
+tags
