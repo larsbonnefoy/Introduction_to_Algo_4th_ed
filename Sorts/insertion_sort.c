@@ -6,7 +6,7 @@
 /*   By: lbonnefo <lbonnefo@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/01 11:17:22 by lbonnefo          #+#    #+#             */
-/*   Updated: 2023/02/02 11:16:55 by lbonnefo         ###   ########.fr       */
+/*   Updated: 2023/02/02 18:57:15 by lbonnefo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,18 +70,31 @@ void insertion_sort(t_insertion_list **my_list, int len_list)
 	//while (i < len_list) //selectionner max chaque element une fois
 	//{
 		tmp = *my_list; //set la tmp au debut de la liste
-		tmp_prev = tmp; 
+		tmp_prev = NULL; 
 	 	to_be_sorted = (*my_list)->next_to_be_inserted;
-		while (tmp && tmp->content <= to_be_sorted->content)
+		while (tmp->content <= to_be_sorted->content && tmp != to_be_sorted) //si tmp_prev = tmp on est pas rentre dans la boucle
 		{
 			tmp_prev = tmp; //garder l'adresse precedente en memoire aussi pour inserer au milieu;		
 			tmp = tmp->next;
+			if (tmp == NULL) 
+				break;
 		}
-		if (!tmp && !tmp)
+		//3 cas
+		//1.soit on insere au debut => tmp_prev == NULL
+		//		il faut aussi la valeur de precedent a celui qu'on va sort => commencer la
+		//		
+		//		
+		//2.soit on doit pas modifier => quand il est deja a la bonne place
+		//3.soit quand on doit l'inserer entre les deux
+
+		if (!tmp)
 			ft_printf("stopped at end\n");
 		else
 		{
-			ft_printf("prev at %d\n", tmp_prev->content);
+			if (tmp_prev == NULL)
+				ft_printf("prev = NULL\n");
+			else
+				ft_printf("prev at %d\n", tmp_prev->content);
 			ft_printf("next at %d\n", tmp->content);
 		}
 		//i++;
