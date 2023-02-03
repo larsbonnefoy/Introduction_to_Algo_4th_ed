@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 /*
-Insertion sort is an implace algo, it is better to use an array as the amount of element is fixed and we don't need add elements.
+Insertion sort is an inplace algo, it is better to use an array as the amount of element is fixed and we don't need add elements.
 
 This implementation as linked lists is used as an exercice to learn about them.
 To speed up the process of insertion, the first elemen has a reference to the end of the sorted sub_array
