@@ -6,14 +6,16 @@
 /*   By: lbonnefo <lbonnefo@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/01 11:17:22 by lbonnefo          #+#    #+#             */
-/*   Updated: 2023/02/02 18:57:15 by lbonnefo         ###   ########.fr       */
+/*   Updated: 2023/02/03 15:40:09 by lbonnefo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /*
- 
-en chained list il faut parcourir la liste depuis le debut avec avec l'elem que je dois inserer et le placer au bon endroit
-Le 1er elem de la liste a le pointeur sur le dernier/prochain elements a inserer (to be determined)
+Insertion sort is an implace algo, it is better to use an array as the amount of element is fixed and we don't need add elements.
+
+This implementation as linked lists is used as an exercice to learn about them.
+To speed up the process of insertion, the first elemen has a reference to the end of the sorted sub_array
+We then can remove the element that has to be inserted, link the element to his right and left together and insert the element at the right place
 
 for i = 1 to n
 	key = A[i]
@@ -32,10 +34,9 @@ typedef struct insertion_list
 {
 	int						content;
 	struct insertion_list	*next;
-	struct insertion_list	*next_to_be_inserted;
+	struct insertion_list	*end_of_sorted_sub_list;
 
 } t_insertion_list;
-
 
 t_insertion_list	*set_list(int argc, char **argv);
 void				print_list(t_insertion_list **list);
@@ -43,6 +44,8 @@ void				insertion_sort(t_insertion_list **my_list, int len_list);
 t_insertion_list	*i_sort_ft_lstnew(int content);
 void				i_sort_ft_lstadd_back(t_insertion_list **lst, t_insertion_list *new);
 void				print_next(t_insertion_list *list);
+void				detach_to_be_sorted(t_insertion_list *end_of_sorted_sub_list);
+void				insert(t_insertion_list *to_be_sorted, t_insertion_list *left, t_insertion_list **start);
 
 int main(int argc, char **argv)
 {
@@ -60,46 +63,31 @@ int main(int argc, char **argv)
 
 void insertion_sort(t_insertion_list **my_list, int len_list)
 {
-	//int i;
-	(void) len_list;
+	int i;
 	t_insertion_list *to_be_sorted;
 	t_insertion_list *tmp;
 	t_insertion_list *tmp_prev;
 
+	i = 0; 
 	tmp = *my_list;
-	//while (i < len_list) //selectionner max chaque element une fois
-	//{
-		tmp = *my_list; //set la tmp au debut de la liste
+	while (i < len_list && ((*my_list)->end_of_sorted_sub_list->next != 0)) 	//end our insertion when the last element to be inserted is the end of the list
+	{
+		tmp = *my_list; 														//set tmp at start of the list 
 		tmp_prev = NULL; 
-	 	to_be_sorted = (*my_list)->next_to_be_inserted;
-		while (tmp->content <= to_be_sorted->content && tmp != to_be_sorted) //si tmp_prev = tmp on est pas rentre dans la boucle
-		{
-			tmp_prev = tmp; //garder l'adresse precedente en memoire aussi pour inserer au milieu;		
+	 	to_be_sorted = (*my_list)->end_of_sorted_sub_list->next;
+		detach_to_be_sorted((*my_list)->end_of_sorted_sub_list);
+		while (tmp->content <= to_be_sorted->content && tmp != (*my_list)->end_of_sorted_sub_list->next)
+		{ 
+			tmp_prev = tmp; 
 			tmp = tmp->next;
 			if (tmp == NULL) 
 				break;
 		}
-		//3 cas
-		//1.soit on insere au debut => tmp_prev == NULL
-		//		il faut aussi la valeur de precedent a celui qu'on va sort => commencer la
-		//		
-		//		
-		//2.soit on doit pas modifier => quand il est deja a la bonne place
-		//3.soit quand on doit l'inserer entre les deux
-
-		if (!tmp)
-			ft_printf("stopped at end\n");
-		else
-		{
-			if (tmp_prev == NULL)
-				ft_printf("prev = NULL\n");
-			else
-				ft_printf("prev at %d\n", tmp_prev->content);
-			ft_printf("next at %d\n", tmp->content);
-		}
-		//i++;
-//	}	
-
+		if (tmp == (*my_list)->end_of_sorted_sub_list->next) 					//We append the element a the end of the list, we need to change our pointer to the end of the sub_list
+			(*my_list)->end_of_sorted_sub_list = to_be_sorted;
+		insert(to_be_sorted, tmp_prev, my_list);
+		i++;
+	}	
 	return ;
 }
 
@@ -116,11 +104,11 @@ t_insertion_list *set_list(int argc, char **argv)
 	while (i < argc)
 	{
 		new_elem = i_sort_ft_lstnew(ft_atoi(argv[i]));
-		new_elem->next_to_be_inserted = NULL;
+		new_elem->end_of_sorted_sub_list = NULL;
 		i_sort_ft_lstadd_back(&start_list, new_elem); 
 		i++;
 	}
-	start_list->next_to_be_inserted = start_list->next;
+	start_list->end_of_sorted_sub_list = start_list;
 	return (start_list);
 }
 
@@ -166,5 +154,49 @@ void	i_sort_ft_lstadd_back(t_insertion_list **lst, t_insertion_list *new)
 
 void print_next(t_insertion_list *list)
 {
-	ft_printf("next to be inserted = %d\n", list->next_to_be_inserted->content);
+	ft_printf("next to be inserted = %d\n", list->end_of_sorted_sub_list->next->content);
+}
+
+/*
+	We want to remove the element that will be inserted from the linked list,
+	joining the end of the sorted sub list with the element to the right of the inserted element.
+	The end of the sub sorteed list doesnt change, only its pointer to the next element, that will
+	be the next to be inserted.	
+*/
+void	detach_to_be_sorted(t_insertion_list *end_of_sorted_sub_list)
+{
+	t_insertion_list *inserted_elem;
+
+	inserted_elem = end_of_sorted_sub_list->next;
+	end_of_sorted_sub_list->next = inserted_elem->next; 
+	inserted_elem->next = NULL;
+}
+
+/* 
+	Insert the element at the right position
+	We have to modify the end of the sub_list only if we insert the element at the end of the sub_Sorted list
+		->check that in the colling function
+ */
+
+void insert(t_insertion_list *to_be_sorted, t_insertion_list *left, t_insertion_list **my_list)
+{
+	t_insertion_list *right;
+	t_insertion_list *start;
+	
+	start = *my_list;
+	if (left == NULL) 			//we insert in front of the list, we need to set the address of the first element to the end of the sublist
+	{
+		to_be_sorted->end_of_sorted_sub_list = start->end_of_sorted_sub_list;
+		start->end_of_sorted_sub_list = NULL;
+		*my_list = to_be_sorted;
+		to_be_sorted->next = start;
+	}		
+	else if(left->next == NULL) //we insert a the end of the list 
+		left->next = to_be_sorted;
+	else						//we insert between 2 elements
+	{
+		right = left->next;
+		left->next = to_be_sorted;
+		to_be_sorted->next = right;
+	}
 }
