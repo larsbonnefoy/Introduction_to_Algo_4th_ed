@@ -46,6 +46,7 @@ void				i_sort_ft_lstadd_back(t_insertion_list **lst, t_insertion_list *new);
 void				print_next(t_insertion_list *list);
 void				detach_to_be_sorted(t_insertion_list *end_of_sorted_sub_list);
 void				insert(t_insertion_list *to_be_sorted, t_insertion_list *left, t_insertion_list **start);
+void 				i_sort_ft_lstclear(t_insertion_list **lst);
 
 int main(int argc, char **argv)
 {
@@ -58,6 +59,7 @@ int main(int argc, char **argv)
 	ft_printf("--------sorting----------\n");
 	insertion_sort(&my_list, argc - 1);
 	print_list(&my_list);
+	i_sort_ft_lstclear(&my_list);
 	return (0);
 }
 
@@ -199,4 +201,19 @@ void insert(t_insertion_list *to_be_sorted, t_insertion_list *left, t_insertion_
 		left->next = to_be_sorted;
 		to_be_sorted->next = right;
 	}
+}
+
+void i_sort_ft_lstclear(t_insertion_list **lst)
+{
+	t_insertion_list	*buffer;
+
+	if (lst == NULL)
+		return ;
+	while (*lst)
+	{
+		buffer = *lst;
+		*lst = (*lst)->next;
+		free(buffer);
+	}
+	lst = NULL;
 }
