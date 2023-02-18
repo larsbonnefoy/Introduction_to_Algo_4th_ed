@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 /*
-Insertion sort is an implace algo, it is better to use an array as the amount of element is fixed and we don't need add elements.
+Insertion sort is an inplace algo, it is better to use an array as the amount of element is fixed and we don't need to add elements.
 
 for i = 1 to n
 	key = A[i]
@@ -26,9 +26,9 @@ for i = 1 to n
 #include "../lib_includes/ft_printf/ft_printf.h"
 #include "../lib_includes/libft/libft.h"
 
-void 	print_array(int *array, int length);
+void 	print_array(int *array, int len);
 int 	*init_array(int argc, char **argv);
-void	insertion_sort(int *array, int length);
+void	insertion_sort(int *array, int len);
 
 int	main(int argc, char **argv)
 {
@@ -37,34 +37,34 @@ int	main(int argc, char **argv)
 	array = init_array(argc, argv);
 	if (array == NULL)
 		return (-1);
-	print_array(array, argc);
-	insertion_sort(array, argc);
-	print_array(array, argc);
+	print_array(array, argc - 1);
+	ft_printf("--------sorting----------\n");
+	insertion_sort(array, argc - 1);
+	print_array(array, argc - 1);
 	free(array);
+	return (0);
 }
 
-void	insertion_sort(int *array, int length)
+void	insertion_sort(int *array, int len)
 {
-	int i;
-	int	j;
-	int end_of_sub_array; 							//position of the last element in the sorted sub_string
+	int i; 											//i is the position of the element to insert (i - 1 is the beg of sorted sub array)
+	int j; 											//use j to find where to insert i
 	int elem_to_insert;
 
-	i = 0;
-	end_of_sub_array = 0;
-	while (i < length)  							//element i is the element that is going to be inserted in the sub array
+	i = 1; 											//dont need to insert the 1st elem of the list
+	while (i < len)  								
 	{
 		elem_to_insert = array[i];
-		j = end_of_sub_array;
-		while (j >= 0 && array[i] >= array[j])		//we have to insert element i in [0; array[end_of_sub_array]]
-		{
-			//use mem_move/cpy pour bouger l'array de 1 vers la droite
+		j = i - 1;
+		while (j >= 0 && array[i] < array[j])		//we have to insert element i in [0; array[end_of_sub_array]]
 			j--;
+		if (j + 1 != i) 							//if j + 1 == i the element doesnt need to move
+		{
+			ft_memmove(&array[j + 1], &array[j], sizeof(int) * (i - j)); 
+			array[j + 1] = elem_to_insert;
 		}
 		i++;
 	}
-
-
 }
 
 int *init_array(int argc, char **argv)
@@ -75,21 +75,21 @@ int *init_array(int argc, char **argv)
 	array = malloc(sizeof(int) * argc - 1);
 	if (array == NULL)
 		return (NULL);
-	i = 0;
+	i = 1;
 	while (i < argc)
 	{
-		array[i] = ft_atoi(argv[i]);
+		array[i - 1] = ft_atoi(argv[i]);
 		i++;
 	}
 	return (array);
 }
 
-void print_array(int *array, int length)
+void print_array(int *array, int len)
 {
 	int i;
 
 	i = 0;
-	while (i < length)
+	while (i < len)
 	{
 		ft_printf("%d ", array[i]);
 		i++;

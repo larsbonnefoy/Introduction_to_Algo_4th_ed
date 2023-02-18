@@ -11,11 +11,12 @@
 /* ************************************************************************** */
 
 #include "libft.h"
+#include <stdio.h>
 
 void	*ft_memmove(void *dst, const void *src, size_t len)
 {
 	size_t	a;
-
+	
 	if (dst == 0 && src == 0)
 		return (NULL);
 	if (src < dst)
