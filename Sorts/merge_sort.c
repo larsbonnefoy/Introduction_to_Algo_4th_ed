@@ -23,9 +23,9 @@
  	L[i] = A[p + i]
  for j = 0 to nR - 1 		//copy A[q + 1 : r] into R[0 : nR - 1] 
  	R[j] = A[q + j + 1]
- i = 0; 					//i indexes the smalles remaining element in L
- j = 0; 					//j indexes the smalles remaining element in R
- k = p 					//k indexes the location in A to fill
+ i = 0; 					//i indexes the smallest remaining element in L
+ j = 0; 					//j indexes the smallest remaining element in R
+ k = p 						//k indexes the location in A to fill
 //As long as each if the arrays L and R contains an unmerged elenent,
 // 	copy the smallest unmerged element back into A[p : r]
  while i < nL and j < nR
@@ -35,7 +35,7 @@
 	else A[k] = R[j]
 		j = j + 1
 	k = k + 1
-//As we have gone through L or R entirelym copy to remainder
+//As we have gone through L or R entirely we can copy the remainder
 // 	of the other to the end of A[p : r]
  while i < nL
  	A[k] = L[i]
@@ -57,6 +57,8 @@
 
 void 	print_array(int *array, int len);
 int 	*init_array(int argc, char **argv);
+void	merge_sort(int *array, int p, int r);
+void 	merge(int *array, int p, int q, int r );
 
 int main(int argc, char **argv)
 {
@@ -64,8 +66,74 @@ int main(int argc, char **argv)
 
 	array = init_array(argc, argv);
 	print_array(array, argc - 1);
+	merge_sort(array, 0, argc - 1);
+	print_array(array, argc - 1);
 }
 
+void merge_sort(int *array, int p, int r)
+{
+	int q;
+
+	if (p >= r)
+		return ;
+	q = (p + r)/2;
+	merge_sort(array, p, q);
+	merge_sort(array, q + 1, r);
+	merge(array, p, q, r);
+}
+
+/*
+ *Memory not freed_correctly if malloc fails atm
+ *could use memcpy to copy from one string to another;
+*/
+void merge(int *array, int p, int q, int r )
+{
+	int nL, nR;
+	int i, j, k; 
+	int *L, *R;
+	
+	i = 0;
+	j = 0;
+	nL = q - p + 1;
+	nR = r - q;
+	L = malloc(sizeof(int) * nL); //Should catch error and free memory if malloc fails
+	R = malloc(sizeof(int) * nR); //Should catch error and free memory if malloc fails
+	for (i = 0; i < nL; i++)
+		L[i] = array[p + i];	
+	for (j = 0; j < nR; j++)
+		R[j] = array[q + j + 1];	
+	i = 0;
+	j = 0;
+	k = p;
+	while (i < nL && j < nR)
+	{
+		if (L[i] <= R[j])
+		{
+			array[k] = L[i];
+			i++;
+		}		
+		else
+		{
+			array[k] = R[j];
+			j++;
+		}
+		k++;
+	}
+	while (i < nL)
+	{
+		array[k] = L[i];
+		i++;
+		k++;
+	}
+	while (j < nR)
+	{
+		array[k] = R[j];
+		j++;
+		k++;
+	}
+	free(L);
+	free(R);
+}
 int *init_array(int argc, char **argv)
 {
 	int i;
