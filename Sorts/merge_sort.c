@@ -4,9 +4,17 @@
  * 	-> An array with one value is always sorted
  * It then merges the arrays back together
  * 
+ MERGE-SORT(A, p, r)
+ if p >= r 					//0 or 1 element
+ 	return
+ q = [(p + r)/2] 			//midpoint of A[p : r]
+ MERGE-SORT(A, p, q) 		//recursively sort A[p : q]
+ MERGE-SORT(A, q + 1, r) 	//recursively sort A[q + 1 : r]
+ // Merge A[p : q] and A[q + 1 : r] into A[p : r]
+ MERGE(A, p, q, r)
  
+ Merge-sort uses Merge as its subroutine;
  Merge copies the two tempo arrays A[p : q] and A[q + 1, r] back into array A[p, r]
-
  MERGE(A, p, q, r)
  nL = q - p + 1 			//length of A[q : p]
  nR = r -  q 				//length of A[q + 1 : r]
@@ -18,7 +26,7 @@
  i = 0; 					//i indexes the smalles remaining element in L
  j = 0; 					//j indexes the smalles remaining element in R
  k = p 					//k indexes the location in A to fill
-//As long as eacg if the arrays L and R contains an unmerged elenent,
+//As long as each if the arrays L and R contains an unmerged elenent,
 // 	copy the smallest unmerged element back into A[p : r]
  while i < nL and j < nR
 	if L[i] <= R[j]
