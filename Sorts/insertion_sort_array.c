@@ -20,6 +20,10 @@ for i = 1 to n
 		A[j + 1] = A[j]			//on decale l'element sur lequel on se trouve vers la droite pour insere notre element a sa gauche
 		j = j - 1 				//on recule le max de 1
 	A[j + 1] = key 				//on reset la key au premier elem
+
+ * Source :
+ * Introduction to Algorithms, Fourth Edition
+ * Thomas H. Cormen;Charles E. Leiserson;Ronald L. Rivest;Clifford Stein ;
 */
 
 #include <stdlib.h>
