@@ -68,6 +68,7 @@ int main(int argc, char **argv)
 	print_array(array, argc - 1);
 	merge_sort(array, 0, argc - 1);
 	print_array(array, argc - 1);
+	free(array);
 }
 
 void merge_sort(int *array, int p, int r)
