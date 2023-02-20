@@ -1,2 +1,2 @@
 To be done
-See push_swap for more details
+Radix base 2  push_swap for more details
