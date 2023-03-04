@@ -58,7 +58,7 @@
 void 	print_array(int *array, int len);
 int 	*init_array(int argc, char **argv);
 void	merge_sort(int *array, int p, int r);
-void 	merge(int *array, int p, int q, int r );
+int 	merge(int *array, int p, int q, int r );
 
 int main(int argc, char **argv)
 {
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 
 	array = init_array(argc, argv);
 	print_array(array, argc - 1);
-	merge_sort(array, 0, argc - 1);
+	merge_sort(array, 0, argc - 2);
 	print_array(array, argc - 1);
 	free(array);
 }
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
 void merge_sort(int *array, int p, int r)
 {
 	int q;
-
+	
 	if (p >= r)
 		return ;
 	q = (p + r)/2;
@@ -83,11 +83,7 @@ void merge_sort(int *array, int p, int r)
 	merge(array, p, q, r);
 }
 
-/*
- *Memory not freed_correctly if malloc fails atm
- *could use memcpy to copy from one string to another;
-*/
-void merge(int *array, int p, int q, int r )
+int merge(int *array, int p, int q, int r )
 {
 	int nL, nR;
 	int i, j, k; 
@@ -97,8 +93,15 @@ void merge(int *array, int p, int q, int r )
 	j = 0;
 	nL = q - p + 1;
 	nR = r - q;
-	L = malloc(sizeof(int) * nL); //Should catch error and free memory if malloc fails
-	R = malloc(sizeof(int) * nR); //Should catch error and free memory if malloc fails
+	L = malloc(sizeof(int) * nL);
+	if (!L)
+		return (1);
+	R = malloc(sizeof(int) * nR); 
+	{
+		if (!R)
+		free(L);
+		return (2);
+	}
 	for (i = 0; i < nL; i++)
 		L[i] = array[p + i];	
 	for (j = 0; j < nR; j++)
@@ -134,7 +137,9 @@ void merge(int *array, int p, int q, int r )
 	}
 	free(L);
 	free(R);
+	return (0);
 }
+
 int *init_array(int argc, char **argv)
 {
 	int i;
