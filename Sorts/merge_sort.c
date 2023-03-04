@@ -97,8 +97,8 @@ int merge(int *array, int p, int q, int r )
 	if (!L)
 		return (1);
 	R = malloc(sizeof(int) * nR); 
+	if (!R)
 	{
-		if (!R)
 		free(L);
 		return (2);
 	}
